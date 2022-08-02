@@ -1,4 +1,4 @@
-defmodule EditorWeb.DocumentLive.Show do
+defmodule EditorWeb.DocumentLive.Edit do
   use EditorWeb, :live_view
 
   alias Editor.Documents
