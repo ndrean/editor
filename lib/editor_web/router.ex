@@ -20,6 +20,13 @@ defmodule EditorWeb.Router do
   scope "/", EditorWeb do
     pipe_through :browser
 
+    live "/documents", DocumentLive.Index, :index
+    live "/documents/new", DocumentLive.Index, :new
+    live "/documents/:id/edit", DocumentLive.Index, :edit
+
+    live "/documents/:id", DocumentLive.Show, :show
+    live "/documents/:id/show/edit", DocumentLive.Show, :edit
+
     get "/", PageController, :index
   end
 
