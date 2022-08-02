@@ -44,4 +44,39 @@ defmodule EditorWeb.DocumentLive.Edit do
 
     {:noreply, socket}
   end
+
+  @impl true
+  def handle_event("save", %{"document" => document_params}, socket) do
+    save_document(socket, document_params)
+  end
+
+  @impl true
+  def handle_info(
+        %{event: "document_saved", payload: %{from_pid: from_pid, id: id}},
+        socket
+      )
+      when from_pid != self() and id == socket.assigns.document.id do
+    {:noreply, assign(socket, :changeset, Documents.change_document(socket.assigns.document))}
+  end
+
+  @impl true
+  def handle_info(%{event: "document_saved"}, socket), do: {:noreply, socket}
+
+  defp save_document(socket, document_params) do
+    case Documents.update_document(socket.assigns.document, document_params) do
+      {:ok, document} ->
+        EditorWeb.Endpoint.broadcast(DocumentPresence.topic(), "document_saved", %{
+          id: document.id,
+          from_pid: self()
+        })
+
+        {:noreply,
+         socket
+         |> assign(:changeset, Documents.change_document(document))
+         |> put_flash(:info, "Document updated successfully")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
+    end
+  end
 end
