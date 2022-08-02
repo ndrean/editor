@@ -1,0 +1,31 @@
+<h1>Show Document</h1>
+
+<%= if @live_action in [:edit] do %>
+  <.modal return_to={Routes.document_show_path(@socket, :show, @document)}>
+    <.live_component
+      module={EditorWeb.DocumentLive.FormComponent}
+      id={@document.id}
+      title={@page_title}
+      action={@live_action}
+      document={@document}
+      return_to={Routes.document_show_path(@socket, :show, @document)}
+    />
+  </.modal>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @document.name %>
+  </li>
+
+  <li>
+    <strong>Data:</strong>
+    <%= @document.data %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.document_show_path(@socket, :edit, @document), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.document_index_path(@socket, :index) %></span>
